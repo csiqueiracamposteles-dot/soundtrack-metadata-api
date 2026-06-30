@@ -1,63 +1,114 @@
-# Soundtrack Metadata API
+# 🎬 Soundtrack Metadata API
 
-API REST desenvolvida em **FastAPI** para localizar e consultar metadados de trilhas sonoras de filmes e séries por meio da integração com **Spotify**, **TMDb** e **MusicBrainz**.
+API REST desenvolvida em **FastAPI** para localizar e consultar metadados de trilhas sonoras de filmes e séries por meio da integração com múltiplos serviços públicos.
 
-A API identifica automaticamente o audiovisual informado, localiza a trilha sonora correspondente e retorna informações como álbum, faixas, ISRC, compositores e links do Spotify.
+A aplicação identifica automaticamente o audiovisual informado, localiza o álbum oficial da trilha sonora e retorna informações estruturadas sobre faixas, intérpretes, compositores, códigos ISRC e links para o Spotify.
 
----
-
-# Funcionalidades
-
-* Pesquisa de trilhas sonoras por título
-* Suporte para filmes e séries
-* Integração com TMDb para identificação do audiovisual
-* Integração com Spotify para localização de álbuns e faixas
-* Consulta de ISRC das faixas
-* Identificação de compositores via MusicBrainz
-* Cache local para otimização das consultas
-* Documentação automática com Swagger/OpenAPI
+Além da API, este repositório inclui um **pipeline completo de processamento em lote**, demonstrando como consumir a API em aplicações reais de enriquecimento e validação de dados.
 
 ---
 
-# Tecnologias
+# 🚀 Funcionalidades
 
-* Python
-* FastAPI
-* Spotify Web API
-* TMDb API
-* MusicBrainz API
-* SQLite
-* Docker
+- Pesquisa de trilhas sonoras por título de filmes e séries
+- Identificação automática do audiovisual utilizando TMDb
+- Localização do álbum oficial no Spotify
+- Extração das faixas da trilha sonora
+- Consulta de códigos ISRC
+- Identificação de compositores utilizando MusicBrainz
+- Cache local utilizando SQLite
+- Retry automático para chamadas às APIs externas
+- Documentação automática com Swagger/OpenAPI
+- Exemplo completo de processamento em lote
 
 ---
 
-# Como executar
+# 🛠 Tecnologias
 
-## Clone o repositório
+- Python 3.12
+- FastAPI
+- Requests
+- Pydantic
+- RapidFuzz
+- SQLite
+- Docker
+- Spotify Web API
+- TMDb API
+- MusicBrainz API
+
+---
+
+# 🏗 Arquitetura
+
+```text
+                        Client
+                           │
+                           ▼
+                    FastAPI REST API
+                           │
+                    SQLite Cache
+                           │
+          ┌────────────────┼────────────────┐
+          ▼                ▼                ▼
+     Spotify API       TMDb API      MusicBrainz API
+```
+
+---
+
+# 📁 Estrutura do Projeto
+
+```text
+soundtrack-metadata-api/
+│
+├── app/
+│   ├── core/
+│   ├── routers/
+│   ├── services/
+│   ├── utils/
+│   └── main.py
+│
+├── examples/
+│   └── soundtrack-matching-pipeline/
+│       ├── data/
+│       ├── pipeline/
+│       ├── run_pipeline.py
+│       └── README.md
+│
+├── Dockerfile
+├── requirements.txt
+├── .env.example
+└── README.md
+```
+
+---
+
+# ⚙️ Como executar
+
+## 1. Clone o repositório
 
 ```bash
 git clone https://github.com/SEU_USUARIO/soundtrack-metadata-api.git
 ```
 
-## Instale as dependências
+## 2. Instale as dependências
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Configure as variáveis de ambiente
+## 3. Configure as variáveis de ambiente
 
-Crie um arquivo `.env` baseado no arquivo `.env.example`.
+Crie um arquivo `.env` baseado em `.env.example`.
 
 Exemplo:
 
 ```env
 SPOTIFY_CLIENT_ID=seu_client_id
 SPOTIFY_CLIENT_SECRET=seu_client_secret
-TMDB_TOKEN=seu_token_tmdb
+TMDB_TOKEN=seu_tmdb_token
 ```
 
-## Execute a aplicação
+## 4. Execute a aplicação
 
 ```bash
 uvicorn app.main:app --reload
@@ -65,27 +116,41 @@ uvicorn app.main:app --reload
 
 ---
 
-# Documentação
+# 📖 Documentação
 
-Após iniciar a aplicação, acesse:
+Após iniciar a aplicação:
 
-```
+Swagger
+
+```text
 http://localhost:8000/api/docs
+```
+
+OpenAPI
+
+```text
+http://localhost:8000/api/openapi.json
+```
+
+Health Check
+
+```text
+http://localhost:8000/healthz
 ```
 
 ---
 
-# Endpoint
+# 🔎 Exemplos de utilização
 
-## Buscar trilha sonora
-
-### GET
+## Consulta via GET
 
 ```http
 GET /api/soundtrack?titulo=Moana
 ```
 
-### POST
+---
+
+## Consulta via POST
 
 ```http
 POST /api/soundtrack
@@ -99,7 +164,7 @@ POST /api/soundtrack
 
 ---
 
-# Exemplo de resposta
+# 📦 Exemplo de resposta
 
 ```json
 {
@@ -121,19 +186,64 @@ POST /api/soundtrack
 
 ---
 
-# Estrutura do projeto
+# 📚 Exemplo incluído no repositório
 
+Este projeto inclui um exemplo completo de utilização da API localizado em:
+
+```text
+examples/
+└── soundtrack-matching-pipeline/
 ```
-app/
-├── core/
-├── routers/
-├── services/
-├── utils/
-└── main.py
+
+O exemplo demonstra um fluxo completo de processamento em lote utilizando a API.
+
+Fluxo:
+
+```text
+movies.csv
+        │
+        ▼
+Carregamento dos títulos
+        │
+        ▼
+Soundtrack Metadata API
+        │
+        ▼
+Spotify
+TMDb
+MusicBrainz
+        │
+        ▼
+Enriquecimento dos metadados
+        │
+        ▼
+Matching utilizando RapidFuzz
+        │
+        ▼
+Relatório Final
+```
+
+O pipeline gera automaticamente:
+
+```text
+enriched_tracks.csv
+matched_tracks.csv
+soundtrack_report.csv
+```
+
+Para executar o exemplo:
+
+```bash
+cd examples/soundtrack-matching-pipeline
+
+python run_pipeline.py
 ```
 
 ---
 
-# Licença
+# 💡 Objetivo do Projeto
 
-Este projeto foi desenvolvido para fins de estudo, demonstração técnica e portfólio.
+Este projeto foi desenvolvido para demonstrar a construção de APIs REST utilizando FastAPI, integração entre múltiplas APIs públicas, técnicas de enriquecimento de metadados musicais e organização de aplicações em camadas.
+
+O exemplo incluído no repositório demonstra como reutilizar a API em um pipeline de processamento de dados, aplicando algoritmos de similaridade e geração de relatórios.
+
